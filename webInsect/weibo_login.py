@@ -230,14 +230,14 @@ if __name__ == '__main__':
         for line in lines:
             if line.startswith('<script>STK && STK.pageletM && STK.pageletM.view({"pid":"pl_weibo_direct'):
                 n=line.find('html":"')
-
                 if n > 0:
-                    j = line[n + 7: -12].replace("\\", "")
+                    j = line[n + 7: -12].replace("\\\"", "\"").replace('\\n','').replace('\\t','').replace("\\/","/")
                     print j
                     soup =BeautifulSoup(j,"lxml")
                     cells = soup.find_all("div", {"class":"feed_content wbcon"})
                     for cell in cells:
-                        print cell.find("a",{"class":"W_texta W_fb"}).get_text()
+                        print eval("u"+"'"+cell.find("a",{"class":"W_texta W_fb"}).get_text()+"'")
+
 
 
 
