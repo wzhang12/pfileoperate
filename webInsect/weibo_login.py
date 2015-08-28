@@ -16,6 +16,7 @@ try:
     import requests
     import errno
     from bs4 import *
+    import bs4
     from requests import Request, Session
 
 except ImportError:
@@ -234,9 +235,21 @@ if __name__ == '__main__':
                     j = line[n + 7: -12].replace("\\\"", "\"").replace('\\n','').replace('\\t','').replace("\\/","/")
                     print j
                     soup =BeautifulSoup(j,"lxml")
-                    cells = soup.find_all("div", {"class":"feed_content wbcon"})
+                    cells = soup.find_all("div", {"class":"WB_cardwrap S_bg2 clearfix"})
                     for cell in cells:
                         print eval("u"+"'"+cell.find("a",{"class":"W_texta W_fb"}).get_text()+"'")
+                        if cell.find("p",{"class":"comment_txt"}):
+                            print eval("u"+"'"+cell.find("p",{"class":"comment_txt"}).get_text(separator=u'', strip=False, types=(bs4.element.NavigableString, bs4.element.Comment))+"'")
+                        else:continue
+                        if cell.find("div",{"class":"feed_from W_textb"}):
+                            print eval("u"+"'"+cell.find("div",{"class":"feed_from W_textb"}).get_text(separator=u'', strip=False, types=(bs4.element.NavigableString, bs4.element.Comment))+"'")
+                        if cell.find("span",{"class":"line S_line1"}):
+                            footer=""
+                            for footers in cell.find_all("span",{"class":"line S_line1"}):
+                                if footers:
+                                    footer+=footers.get_text(separator=u'', strip=False, types=(bs4.element.NavigableString, bs4.element.Comment))
+                            print eval("u"+"'"+footer+"'")
+                        print
 
 
 
