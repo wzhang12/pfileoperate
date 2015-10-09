@@ -225,14 +225,16 @@ if __name__ == '__main__':
     if login(username, pwd, cookie_file):
         print 'Login WEIBO succeeded'
 
-        page =u""+urllib2.urlopen('http://s.weibo.com/weibo/scala&Refer=index').read()
+        page =urllib2.urlopen('http://s.weibo.com/weibo/scala&Refer=index').read()
         print page
         lines=page.splitlines()
         for line in lines:
             if line.startswith('<script>STK && STK.pageletM && STK.pageletM.view({"pid":"pl_weibo_direct'):
                 n=line.find('html":"')
                 if n > 0:
-                    j = line[n + 7: -12].replace("\\\"", "\"").replace('\\n','').replace('\\t','').replace("\\/","/")
+                    #replace("'","\\'")因为eval中(')是敏感字符会报错
+                    j = line[n + 7: -12].replace("\\\"", "\"").replace('\\n','').replace('\\t','').replace("\\/","/").replace("'","\\'")
+
                     print j
                     soup =BeautifulSoup(j,"lxml")
                     cells = soup.find_all("div", {"class":"WB_cardwrap S_bg2 clearfix"})
@@ -242,7 +244,7 @@ if __name__ == '__main__':
                             print eval("u"+"'"+cell.find("p",{"class":"comment_txt"}).get_text(separator=u'', strip=False, types=(bs4.element.NavigableString, bs4.element.Comment))+"'")
                         else:continue
                         if cell.find("div",{"class":"feed_from W_textb"}):
-                            print eval("u"+"'"+cell.find("div",{"class":"feed_from W_textb"}).get_text(separator=u'', strip=False, types=(bs4.element.NavigableString, bs4.element.Comment))+"'")
+                            print eval('u'+'"'+cell.find("div",{"class":"feed_from W_textb"}).get_text(separator=u'', strip=False, types=(bs4.element.NavigableString, bs4.element.Comment))+'"')
                         if cell.find("span",{"class":"line S_line1"}):
                             footer=""
                             for footers in cell.find_all("span",{"class":"line S_line1"}):
